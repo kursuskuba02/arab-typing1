@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة الكتابة العربية</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow: hidden;
+            color: white;
+        }
+        #menu-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            position: relative;
+            z-index: 100;
+        }
+        .game-title {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+        .menu-button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 20px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+        .menu-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+        }
+        #timer-selection {
+            display: none;
+            text-align: center;
+            margin: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        .timer-button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: linear-gradient(45deg, #00C853, #69F0AE);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            transition: transform 0.2s;
+        }
+        .timer-button:hover {
+            transform: scale(1.05);
+        }
+        #game-container {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        .balloon {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 120px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        #keyboard-container {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 300px;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA+gAAAEsCAYAAABQCvWcAAAACXBIWXMAAAsTAAALEwEAmpwYAAAGAGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZS5uc...') center/contain no-repeat;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        #score, #timer, #lives {
+            position: fixed;
+            top: 20px;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 15px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        #score { right: 20px; }
+        #timer { right: 200px; }
+        #lives { left: 20px; }
+        #input-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 40px;
+            font-size: 20px;
+            text-align: center;
+            direction: rtl;
+            border: none;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+        #input-box:focus {
+            outline: none;
+            box-shadow: 0 4px 20px rgba(33, 150, 243, 0.4);
+        }
+        #game-over {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        #name-input {
+            margin: 15px 0;
+            padding: 10px;
+            font-size: 18px;
+            text-align: center;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            width: 200px;
+        }
+        #leaderboard-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+        .leaderboard-entry {
+            margin: 15px 0;
+            padding: 15px;
+            background: linear-gradient(45deg, #f1f1f1, #ffffff);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Update game info styles */
+        .game-info {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .keyboard-emoji {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .game-info-text {
+            color: white;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+
+        .game-info-text a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .game-info-text a:hover {
+            color: #69F0AE;
+        }
+
+        @media (max-width: 768px) {
+            .game-info {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            .keyboard-emoji {
+                font-size: 36px;
+                margin-bottom: 10px;
+            }
+
+            .game-info-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="menu-container">
+        <h1 class="game-title">لعبة الكتابة العربية</h1>
+        
+        <!-- Add game info section with keyboard emoji -->
+        <div class="game-info">
+            <div class="keyboard-emoji">⌨️</div>
+            <div class="game-info-text">
+                Game ini dibuat oleh <a href="https://kursuskuba.com" target="_blank">kursuskuba.com</a><br>
+                Tempat Belajar Bahasa Arab dengan Teknologi Modern
+            </div>
+        </div>
+        <button class="menu-button" onclick="showTimerSelection()">لعبة جديدة</button>
+        <button class="menu-button" onclick="showLeaderboard()">لوحة المتصدرين</button>
+        <div id="timer-selection">
+            <h3>اختر الوقت:</h3>
+            <button class="timer-button" onclick="startGameWithTimer(1)">1 دقيقة</button>
+            <button class="timer-button" onclick="startGameWithTimer(2)">2 دقيقة</button>
+            <button class="timer-button" onclick="startGameWithTimer(3)">3 دقائق</button>
+            <button class="timer-button" onclick="startGameWithTimer(4)">4 دقائق</button>
+            <button class="timer-button" onclick="startGameWithTimer(5)">5 دقائق</button>
+        </div>
+    </div>
+
+    <div id="game-container">
+        <div id="score">النقاط: <span id="score-value">0</span></div>
+        <div id="timer">الوقت: <span id="timer-value">0:00</span></div>
+        <div id="lives">❤️ <span id="lives-value">4</span></div>
+        <div id="keyboard-container"></div>
+        <input type="text" id="input-box" placeholder="اكتب هنا..." autocomplete="off">
+    </div>
+
+    <div id="game-over">
+        <h2>انتهت اللعبة!</h2>
+        <p>النقاط النهائية: <span id="final-score">0</span></p>
+        <p>السرعة: <span id="words-per-minute">0</span> كلمة في الدقيقة</p>
+        <input type="text" id="name-input" placeholder="أدخل اسمك" maxlength="20">
+        <button class="menu-button" onclick="saveScore()">حفظ النتيجة</button>
+        <button class="menu-button" onclick="showMenu()">القائمة الرئيسية</button>
+    </div>
+
+    <div id="leaderboard-container">
+        <h2>لوحة المتصدرين</h2>
+        <div id="leaderboard-entries"></div>
+        <button class="menu-button" onclick="showMenu()">رجوع</button>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
