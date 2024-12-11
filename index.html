@@ -92,18 +92,10 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
         #keyboard-container {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 300px;
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA+gAAAEsCAYAAABQCvWcAAAACXBIWXMAAAsTAAALEwEAmpwYAAAGAGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZS5uc...') center/contain no-repeat;
-            opacity: 0.2;
-            pointer-events: none;
+            display: none;
         }
         #score, #timer, #lives {
-            position: fixed;
+            position: absolute;
             top: 20px;
             font-size: 24px;
             color: white;
@@ -114,9 +106,15 @@
             backdrop-filter: blur(5px);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        #score { right: 20px; }
-        #timer { right: 200px; }
-        #lives { left: 20px; }
+        #lives {
+            left: 20px;
+        }
+        #timer {
+            right: 20px;
+        }
+        #score {
+            right: 20px;
+        }
         #input-box {
             position: fixed;
             bottom: 20px;
@@ -229,6 +227,320 @@
                 font-size: 16px;
             }
         }
+
+        /* Update virtual keyboard styles */
+        #virtual-keyboard {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #e0e0e0;
+            padding: 8px 3px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            direction: rtl;
+        }
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+            margin: 3px 0;
+            padding: 0 2px;
+        }
+        .key {
+            flex: 1;
+            min-width: 8.5%;
+            height: 45px;
+            font-size: 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            user-select: none;
+            color: #333;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+            position: relative;
+        }
+        .key:active {
+            background: #e0e0e0;
+            transform: translateY(1px);
+        }
+        .key.backspace {
+            min-width: 12%;
+            background: #d8d8d8;
+        }
+        .key.backspace svg {
+            width: 24px;
+            height: 24px;
+            fill: #333;
+        }
+        
+        /* PC Keyboard Styles */
+        @media screen and (min-width: 769px) {
+            #virtual-keyboard {
+                padding: 5px;
+                bottom: 20px;
+                background: rgba(224, 224, 224, 0.95);
+                width: 600px;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 5px;
+                z-index: 999;
+                direction: ltr;
+            }
+            .key {
+                height: 35px;
+                flex: none;
+                min-width: 35px;
+                padding: 2px 5px;
+                font-size: 16px;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+            }
+            .key .latin {
+                font-size: 10px;
+                color: #666;
+                position: absolute;
+                top: 2px;
+                left: 2px;
+            }
+            .key .arabic {
+                font-size: 16px;
+                color: #333;
+            }
+            .keyboard-row {
+                gap: 3px;
+                margin: 3px 0;
+            }
+            .key.backspace {
+                min-width: 50px;
+            }
+            .key.tab, .key.enter {
+                display: none;
+            }
+            .key.shift {
+                min-width: 70px;
+            }
+            .key.space, .number-row {
+                display: none;
+            }
+        }
+
+        /* Mobile Keyboard Styles */
+        @media screen and (max-width: 768px) {
+            #input-box {
+                width: 80%;
+                max-width: 300px;
+                bottom: 240px;
+                z-index: 1001;
+            }
+            .key {
+                font-size: 18px;
+                height: 40px;
+            }
+            .key .latin {
+                display: none;
+            }
+            #game-container {
+                padding-bottom: 280px;
+            }
+            .number-row {
+                display: none;
+            }
+            #input-display {
+                bottom: 200px;
+            }
+            #virtual-keyboard {
+                bottom: 0;
+                padding: 3px;
+                background: #eee;
+                width: 100%;
+                max-width: 400px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .key {
+                height: 35px;
+                min-width: 28px;
+                margin: 1px;
+                padding: 0;
+                font-size: 16px;
+                border-radius: 5px;
+            }
+
+            .key.backspace {
+                min-width: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .key.backspace svg {
+                width: 20px;
+                height: 20px;
+                fill: #666;
+            }
+
+            .keyboard-row {
+                margin: 1px 0;
+                gap: 1px;
+                padding: 0 2px;
+            }
+
+            .key .latin {
+                display: none;
+            }
+
+            .key.shift {
+                display: none;
+            }
+        }
+
+        /* Styles untuk input display */
+        #input-display {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+            direction: rtl;
+            font-size: 24px;
+            min-height: 40px;
+            width: 80%;
+            max-width: 600px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 140px;
+            z-index: 1000;
+        }
+
+        /* PC Keyboard Styles */
+        @media screen and (min-width: 769px) {
+            #input-box {
+                bottom: 180px;
+                z-index: 1000;
+            }
+
+            #game-container {
+                padding-bottom: 220px;
+            }
+        }
+
+        /* Mobile Keyboard Styles */
+        @media screen and (max-width: 768px) {
+            #input-display {
+                bottom: 200px;
+            }
+            
+            #input-box {
+                bottom: 240px;
+            }
+
+            #game-container {
+                padding-bottom: 280px;
+            }
+        }
+        
+        .shift-active .key[data-shift] .arabic::after {
+            content: attr(data-shift);
+            position: absolute;
+            top: -10px;
+            right: 2px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Tambahkan style untuk membalik urutan keyboard di mobile */
+        @media screen and (max-width: 768px) {
+            .keyboard-row {
+                display: flex;
+                flex-direction: row-reverse;
+                justify-content: center;
+            }
+            
+            .key.shift {
+                display: none;
+            }
+        }
+
+        /* Styles untuk game info */
+        #lives {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            font-size: 20px;
+            color: white;
+            z-index: 100;
+        }
+
+        #timer {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 20px;
+            color: white;
+            z-index: 100;
+        }
+
+        #score {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 20px;
+            color: white;
+            z-index: 100;
+        }
+
+        /* Mobile styles untuk game info */
+        @media screen and (max-width: 768px) {
+            #lives {
+                left: 10px;
+                top: 10px;
+                font-size: 16px;
+                background: rgba(0, 0, 0, 0.5);
+                padding: 5px 10px;
+                border-radius: 15px;
+            }
+
+            #timer {
+                left: 50%;
+                transform: translateX(-50%);
+                top: 10px;
+                font-size: 16px;
+                background: rgba(0, 0, 0, 0.5);
+                padding: 5px 10px;
+                border-radius: 15px;
+                right: auto;
+            }
+
+            #score {
+                right: 10px;
+                top: 10px;
+                font-size: 16px;
+                background: rgba(0, 0, 0, 0.5);
+                padding: 5px 10px;
+                border-radius: 15px;
+            }
+
+            #game-info {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -256,11 +568,59 @@
     </div>
 
     <div id="game-container">
-        <div id="score">النقاط: <span id="score-value">0</span></div>
-        <div id="timer">الوقت: <span id="timer-value">0:00</span></div>
-        <div id="lives">❤️ <span id="lives-value">4</span></div>
-        <div id="keyboard-container"></div>
+        <div id="game-info">
+            <div id="lives">❤️ <span id="lives-value">4</span></div>
+            <div id="timer">الوقت: <span id="timer-value">0:00</span></div>
+            <div id="score">النقاط: <span id="score-value">0</span></div>
+        </div>
+        <div id="input-display"></div>
         <input type="text" id="input-box" placeholder="اكتب هنا..." autocomplete="off">
+        <div id="virtual-keyboard">
+            <div class="keyboard-row">
+                <div class="key" data-char="ض"><span class="latin">Q</span><span class="arabic">ض</span></div>
+                <div class="key" data-char="ص"><span class="latin">W</span><span class="arabic">ص</span></div>
+                <div class="key" data-char="ث"><span class="latin">E</span><span class="arabic">ث</span></div>
+                <div class="key" data-char="ق"><span class="latin">R</span><span class="arabic">ق</span></div>
+                <div class="key" data-char="ف"><span class="latin">T</span><span class="arabic">ف</span></div>
+                <div class="key" data-char="غ"><span class="latin">Y</span><span class="arabic">غ</span></div>
+                <div class="key" data-char="ع"><span class="latin">U</span><span class="arabic">ع</span></div>
+                <div class="key" data-char="ه"><span class="latin">I</span><span class="arabic">ه</span></div>
+                <div class="key" data-char="خ"><span class="latin">O</span><span class="arabic">خ</span></div>
+                <div class="key" data-char="ح"><span class="latin">P</span><span class="arabic">ح</span></div>
+                <div class="key" data-char="ج"><span class="latin">[</span><span class="arabic">ج</span></div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key" data-char="ش"><span class="latin">A</span><span class="arabic">ش</span></div>
+                <div class="key" data-char="س"><span class="latin">S</span><span class="arabic">س</span></div>
+                <div class="key" data-char="ي"><span class="latin">D</span><span class="arabic">ي</span></div>
+                <div class="key" data-char="ب"><span class="latin">F</span><span class="arabic">ب</span></div>
+                <div class="key" data-char="ل"><span class="latin">G</span><span class="arabic">ل</span></div>
+                <div class="key" data-char="ا"><span class="latin">H</span><span class="arabic">ا</span></div>
+                <div class="key" data-char="ت"><span class="latin">J</span><span class="arabic">ت</span></div>
+                <div class="key" data-char="ن"><span class="latin">K</span><span class="arabic">ن</span></div>
+                <div class="key" data-char="م"><span class="latin">L</span><span class="arabic">م</span></div>
+                <div class="key" data-char="ك"><span class="latin">;</span><span class="arabic">ك</span></div>
+            </div>
+            <div class="keyboard-row">
+                <div class="key shift"><span class="latin">Shift</span></div>
+                <div class="key" data-char="ئ" data-shift="~"><span class="latin">Z</span><span class="arabic">ئ</span></div>
+                <div class="key" data-char="ء" data-shift="ْ"><span class="latin">X</span><span class="arabic">ء</span></div>
+                <div class="key" data-char="ؤ" data-shift="ٌ"><span class="latin">C</span><span class="arabic">ؤ</span></div>
+                <div class="key" data-char="ر" data-shift="ٍ"><span class="latin">V</span><span class="arabic">ر</span></div>
+                <div class="key" data-char="لا" data-shift="إ"><span class="latin">B</span><span class="arabic">لا</span></div>
+                <div class="key" data-char="ى" data-shift="'"><span class="latin">N</span><span class="arabic">ى</span></div>
+                <div class="key" data-char="ة" data-shift='"'><span class="latin">M</span><span class="arabic">ة</span></div>
+                <div class="key" data-char="و" data-shift=","><span class="latin">,</span><span class="arabic">و</span></div>
+                <div class="key" data-char="ز" data-shift="."><span class="latin">.</span><span class="arabic">ز</span></div>
+                <div class="key" data-char="ظ" data-shift="؟"><span class="latin">/</span><span class="arabic">ظ</span></div>
+                <div class="key backspace">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"></path>
+                    </svg>
+                </div>
+                <div class="key shift"><span class="latin">Shift</span></div>
+            </div>
+        </div>
     </div>
 
     <div id="game-over">
@@ -278,6 +638,127 @@
         <button class="menu-button" onclick="showMenu()">رجوع</button>
     </div>
 
+    <script>
+        // Fungsi untuk menampilkan keyboard virtual
+        function showVirtualKeyboard() {
+            const keyboard = document.getElementById('virtual-keyboard');
+            const input = document.getElementById('input-box');
+            if (keyboard && input) {
+                keyboard.style.display = 'block';
+                if (window.innerWidth <= 768) {
+                    input.setAttribute('readonly', 'readonly');
+                }
+            }
+        }
+
+        function hideVirtualKeyboard() {
+            const keyboard = document.getElementById('virtual-keyboard');
+            const input = document.getElementById('input-box');
+            if (keyboard && input) {
+                keyboard.style.display = 'none';
+                if (window.innerWidth <= 768) {
+                    input.removeAttribute('readonly');
+                }
+            }
+        }
+
+        // Fungsi untuk keyboard virtual
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.getElementById('input-box');
+            const keyboard = document.getElementById('virtual-keyboard');
+            const inputDisplay = document.getElementById('input-display');
+            let isShiftPressed = false;
+            
+            if (input && keyboard) {
+                // Event untuk input box
+                input.addEventListener('input', function(e) {
+                    if (inputDisplay) {
+                        inputDisplay.textContent = this.value;
+                    }
+                });
+
+                input.addEventListener('focus', function() {
+                    showVirtualKeyboard();
+                });
+
+                // Event untuk Shift
+                const shiftKeys = keyboard.querySelectorAll('.key.shift');
+                shiftKeys.forEach(shiftKey => {
+                    shiftKey.addEventListener('mousedown', function() {
+                        isShiftPressed = true;
+                        keyboard.classList.add('shift-active');
+                    });
+                });
+
+                document.addEventListener('mouseup', function() {
+                    isShiftPressed = false;
+                    keyboard.classList.remove('shift-active');
+                });
+
+                // Event untuk keyboard virtual
+                const keys = keyboard.querySelectorAll('.key');
+                keys.forEach(key => {
+                    if (!key.classList.contains('shift')) {
+                        if (key.classList.contains('backspace')) {
+                            key.addEventListener('click', function() {
+                                input.value = input.value.slice(0, -1);
+                                if (inputDisplay) {
+                                    inputDisplay.textContent = input.value;
+                                }
+                                input.dispatchEvent(new Event('input'));
+                            });
+                        } else {
+                            key.addEventListener('click', function() {
+                                const char = isShiftPressed ? 
+                                    this.getAttribute('data-shift') : 
+                                    this.getAttribute('data-char');
+                                if (char && input) {
+                                    input.value += char;
+                                    if (inputDisplay) {
+                                        inputDisplay.textContent = input.value;
+                                    }
+                                    input.dispatchEvent(new Event('input'));
+                                }
+                            });
+                        }
+                    }
+                });
+
+                // Physical keyboard Shift handling
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Shift') {
+                        isShiftPressed = true;
+                        keyboard.classList.add('shift-active');
+                    }
+                });
+
+                document.addEventListener('keyup', function(e) {
+                    if (e.key === 'Shift') {
+                        isShiftPressed = false;
+                        keyboard.classList.remove('shift-active');
+                    }
+                });
+
+                // Event untuk timer button (mulai game)
+                const timerButtons = document.querySelectorAll('.timer-button');
+                timerButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        setTimeout(showVirtualKeyboard, 500);
+                    });
+                });
+
+                // Event untuk menutup keyboard saat klik di luar
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('#virtual-keyboard') && 
+                        !e.target.closest('#input-box')) {
+                        if (window.innerWidth <= 768) {
+                            hideVirtualKeyboard();
+                        }
+                    }
+                });
+            }
+        });
+    </script>
     <script src="game.js"></script>
 </body>
 </html>
