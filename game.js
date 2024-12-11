@@ -179,6 +179,7 @@ function startGame() {
 
     // Start timer
     gameTimer = setInterval(updateTimer, 1000);
+    setupKeyboardListeners();
 }
 
 function createBalloon() {
@@ -201,6 +202,11 @@ function endGame(reason) {
     
     finalScore.textContent = score;
     wpmValue.textContent = wpm;
+    
+    // Dispatch game over event
+    const gameOverEvent = new Event('gameOver');
+    document.dispatchEvent(gameOverEvent);
+    
     gameOverScreen.style.display = 'block';
     gameContainer.style.display = 'none';
 }
@@ -232,6 +238,53 @@ function saveScore() {
     showMenu();
 }
 
+function setupKeyboardListeners() {
+    // Menghapus event listener lama jika ada
+    document.removeEventListener('keydown', handleKeyPress);
+    // Menambahkan event listener baru
+    document.addEventListener('keydown', handleKeyPress);
+}
+
+function handleKeyPress(event) {
+    if (isGameOver) return;
+    
+    // Mengabaikan tombol khusus seperti Shift, Ctrl, Alt, dll
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    
+    // Mendapatkan karakter Arab berdasarkan tombol keyboard yang ditekan
+    const arabicChar = getArabicChar(event.key);
+    if (arabicChar) {
+        event.preventDefault();
+        inputBox.value += arabicChar;
+        // Memicu event input untuk mengecek kata
+        const inputEvent = new Event('input');
+        inputBox.dispatchEvent(inputEvent);
+    }
+}
+
+function getArabicChar(key) {
+    const keyMap = {
+        'q': 'ض', 'w': 'ص', 'e': 'ث', 'r': 'ق', 't': 'ف', 'y': 'غ', 'u': 'ع', 'i': 'ه', 'o': 'خ', 'p': 'ح', '[': 'ج',
+        'a': 'ش', 's': 'س', 'd': 'ي', 'f': 'ب', 'g': 'ل', 'h': 'ا', 'j': 'ت', 'k': 'ن', 'l': 'م', ';': 'ك',
+        'z': 'ئ', 'x': 'ء', 'c': 'ؤ', 'v': 'ر', 'b': 'ى', 'n': 'ة', 'm': 'و', ',': 'ز', '.': 'ظ',
+        '`': 'ذ', '1': '١', '2': '٢', '3': '٣', '4': '٤', '5': '٥', '6': '٦', '7': '٧', '8': '٨', '9': '٩', '0': '٠'
+    };
+    
+    // Konversi key ke lowercase untuk konsistensi
+    const lowerKey = key.toLowerCase();
+    return keyMap[lowerKey] || null;
+}
+
+function handleVirtualKeyPress(char) {
+    if (isGameOver) return;
+    
+    inputBox.value += char;
+    // Memicu event input untuk mengecek kata
+    const event = new Event('input');
+    inputBox.dispatchEvent(event);
+}
+
+// Event listener untuk input box
 inputBox.addEventListener('input', () => {
     const typedWord = inputBox.value;
     
@@ -245,6 +298,15 @@ inputBox.addEventListener('input', () => {
             inputBox.value = '';
             break;
         }
+    }
+});
+
+// Mencegah default keyboard di mobile
+inputBox.addEventListener('focus', (e) => {
+    if (window.innerWidth <= 768) {
+        e.preventDefault();
+        inputBox.blur();
+        showVirtualKeyboard();
     }
 });
 
