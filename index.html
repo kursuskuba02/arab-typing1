@@ -92,15 +92,40 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
         #keyboard-container {
-            display: none;
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: #333;
+            background: rgba(51, 51, 51, 0.95);
             padding: 10px;
-            box-sizing: border-box;
             z-index: 1000;
+        }
+
+        #mobile-keyboard {
+            display: none;
+        }
+
+        #pc-keyboard {
+            display: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            #keyboard-container {
+                padding: 5px;
+            }
+            .keyboard-row {
+                display: flex;
+                flex-direction: row-reverse;
+                justify-content: center;
+                margin: 2px 0;
+            }
+            .key {
+                min-width: 30px;
+                height: 40px;
+                margin: 2px;
+                padding: 5px;
+                font-size: 18px;
+            }
         }
 
         .keyboard {
@@ -159,12 +184,13 @@
         /* Add styles for alif popup menu */
         .alif-popup {
             display: none;
-            position: fixed;
+            position: absolute;
             background: white;
             border: 1px solid #ccc;
             border-radius: 10px;
             padding: 10px;
             z-index: 1100;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .alif-popup .key {
@@ -693,31 +719,68 @@
             }
         }
 
-        /* Add styles for alif popup menu */
+        /* Alif popup styles */
         .alif-popup {
             display: none;
             position: fixed;
-            background: rgba(0, 0, 0, 0.9);
-            border-radius: 10px;
-            padding: 10px;
-            z-index: 1100;
+            background: rgba(51, 51, 51, 0.95);
+            border-radius: 8px;
+            padding: 5px;
+            z-index: 1001;
         }
 
         .alif-popup .key {
-            margin: 5px;
+            margin: 2px;
             min-width: 40px;
+            height: 40px;
+            font-size: 20px;
+            background: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .alif-popup .key:active {
+            background: #eee;
+        }
+
+        .variant-key {
+            background: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .variant-key:active {
+            background: #eee;
+        }
+
+        /* PC Keyboard styles */
+        #pc-keyboard {
+            padding: 3px;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         #pc-keyboard .key {
             margin: 1px;
-            padding: 8px;
+            padding: 4px;
             background: white;
             border: 1px solid #333;
             border-radius: 3px;
             color: black;
             cursor: pointer;
-            font-size: 14px;
-            min-width: 30px;
+            font-size: 12px;
+            min-width: 28px;
+            height: 35px;
             transition: transform 0.1s;
             display: flex;
             flex-direction: column;
@@ -726,8 +789,8 @@
         }
 
         #pc-keyboard .latin-char {
-            font-size: 10px;
-            color: #333;
+            font-size: 9px;
+            color: #666;
             margin-bottom: 1px;
         }
 
@@ -740,18 +803,53 @@
             background: #eee;
         }
 
+        #pc-keyboard .keyboard-row {
+            display: flex;
+            flex-direction: row;  /* Changed from row-reverse to row */
+            justify-content: center;
+            margin: 1px 0;
+        }
+
+        #pc-keyboard .keyboard-row:first-child .backspace-key {
+            order: 12;  /* Move backspace to the end */
+        }
+
+        #pc-keyboard .keyboard-row:last-child .shift-key {
+            order: 1;  /* Keep shift at the start */
+        }
+
         #pc-keyboard .backspace-key {
             background: white;
-            padding: 8px 15px;
+            padding: 4px 10px;
+            min-width: 40px;
+            height: 35px;
         }
 
         #pc-keyboard .shift-key {
             min-width: 50px;
+            height: 35px;
             background: white;
         }
 
-        #pc-keyboard .keyboard-row {
-            margin: 1px 0;
+        @media screen and (min-width: 769px) {
+            #keyboard-container {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(51, 51, 51, 0.95);
+                padding: 5px;
+                z-index: 1000;
+            }
+
+            #pc-keyboard {
+                display: block;
+            }
+
+            #mobile-keyboard {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -850,42 +948,48 @@
             <!-- Mobile Keyboard Layout -->
             <div id="mobile-keyboard" class="keyboard">
                 <div class="keyboard-row">
-                    <button class="key">ض</button>
-                    <button class="key">ص</button>
-                    <button class="key">ث</button>
-                    <button class="key">ق</button>
-                    <button class="key">ف</button>
-                    <button class="key">غ</button>
-                    <button class="key">ع</button>
-                    <button class="key">ه</button>
-                    <button class="key">خ</button>
-                    <button class="key">ح</button>
-                    <button class="key">ج</button>
+                    <button class="key" data-normal="ض">ض</button>
+                    <button class="key" data-normal="ص">ص</button>
+                    <button class="key" data-normal="ث">ث</button>
+                    <button class="key" data-normal="ق">ق</button>
+                    <button class="key" data-normal="ف">ف</button>
+                    <button class="key" data-normal="غ">غ</button>
+                    <button class="key" data-normal="ع">ع</button>
+                    <button class="key" data-normal="ه">ه</button>
+                    <button class="key" data-normal="خ">خ</button>
+                    <button class="key" data-normal="ح">ح</button>
+                    <button class="key" data-normal="ج">ج</button>
                 </div>
                 <div class="keyboard-row">
-                    <button class="key">ش</button>
-                    <button class="key">س</button>
-                    <button class="key">ي</button>
-                    <button class="key">ب</button>
-                    <button class="key">ل</button>
-                    <button class="key alif-key">ا</button>
-                    <button class="key">ت</button>
-                    <button class="key">ن</button>
-                    <button class="key">م</button>
-                    <button class="key">ك</button>
-                    <button class="key">ة</button>
+                    <button class="key" data-normal="ش">ش</button>
+                    <button class="key" data-normal="س">س</button>
+                    <button class="key" data-normal="ي">ي</button>
+                    <button class="key" data-normal="ب">ب</button>
+                    <button class="key" data-normal="ل">ل</button>
+                    <button class="key alif-key" data-normal="ا">ا</button>
+                    <button class="key" data-normal="ت">ت</button>
+                    <button class="key" data-normal="ن">ن</button>
+                    <button class="key" data-normal="م">م</button>
+                    <button class="key" data-normal="ك">ك</button>
+                    <button class="key" data-normal="ة">ة</button>
                 </div>
                 <div class="keyboard-row">
-                    <button class="key">ء</button>
-                    <button class="key">ظ</button>
-                    <button class="key">ط</button>
-                    <button class="key">ذ</button>
-                    <button class="key">د</button>
-                    <button class="key">ز</button>
-                    <button class="key">ر</button>
-                    <button class="key">و</button>
-                    <button class="key">ى</button>
-                    <button class="backspace-key">⌫</button>
+                    <button class="key" data-normal="ء">ء</button>
+                    <button class="key" data-normal="ظ">ظ</button>
+                    <button class="key" data-normal="ط">ط</button>
+                    <button class="key" data-normal="ذ">ذ</button>
+                    <button class="key" data-normal="د">د</button>
+                    <button class="key" data-normal="ز">ز</button>
+                    <button class="key" data-normal="و">و</button>
+                    <button class="key" data-normal="ر">ر</button>
+                    <button class="key" data-normal="ى">ى</button>
+                    <button class="backspace-key" data-action="backspace">⌫</button>
+                </div>
+                <!-- Add alif popup menu -->
+                <div class="alif-popup">
+                    <button class="key variant-key" data-normal="أ">أ</button>
+                    <button class="key variant-key" data-normal="إ">إ</button>
+                    <button class="key variant-key" data-normal="آ">آ</button>
                 </div>
             </div>
         </div>
@@ -979,7 +1083,7 @@
                             key.addEventListener('click', function() {
                                 const char = isShiftPressed ? 
                                     this.getAttribute('data-shift') : 
-                                    this.getAttribute('data-char');
+                                    this.getAttribute('data-normal');
                                 if (char && input) {
                                     input.value += char;
                                     if (inputDisplay) {
