@@ -93,7 +93,85 @@
         }
         #keyboard-container {
             display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #333;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 1000;
         }
+
+        .keyboard {
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0;
+        }
+
+        .key {
+            margin: 2px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            color: black;
+            cursor: pointer;
+            font-size: 18px;
+            min-width: 40px;
+            transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .latin-char {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .arabic-char {
+            font-size: 18px;
+        }
+
+        .key:active {
+            transform: scale(0.95);
+            background: #eee;
+        }
+
+        .backspace-key {
+            background: #f8f8f8;
+            padding: 15px 25px;
+        }
+
+        .space-key {
+            min-width: 200px;
+        }
+
+        /* Add styles for alif popup menu */
+        .alif-popup {
+            display: none;
+            position: fixed;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1100;
+        }
+
+        .alif-popup .key {
+            margin: 5px;
+            min-width: 40px;
+        }
+
         #score, #timer, #lives {
             position: absolute;
             top: 20px;
@@ -110,7 +188,8 @@
             left: 20px;
         }
         #timer {
-            right: 20px;
+            left: 50%;
+            transform: translateX(-50%);
         }
         #score {
             right: 20px;
@@ -483,11 +562,12 @@
 
         #timer {
             position: absolute;
-            right: 20px;
+            left: 50%;
             top: 20px;
             font-size: 20px;
             color: white;
             z-index: 100;
+            transform: translateX(-50%);
         }
 
         #score {
@@ -541,6 +621,138 @@
                 padding: 10px;
             }
         }
+
+        #keyboard-container {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .keyboard {
+            display: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin: 5px 0;
+        }
+
+        .key {
+            margin: 2px;
+            padding: 15px;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            min-width: 40px;
+            transition: transform 0.1s;
+        }
+
+        .key:active {
+            transform: scale(0.95);
+        }
+
+        .backspace-key {
+            background: linear-gradient(45deg, #ff4757, #ff6b6b);
+            padding: 15px 25px;
+        }
+
+        #pc-keyboard {
+            display: none;
+        }
+
+        #mobile-keyboard {
+            display: none;
+        }
+
+        @media screen and (max-width: 768px) {
+            #mobile-keyboard {
+                display: block;
+            }
+            .key {
+                padding: 10px;
+                font-size: 16px;
+                min-width: 30px;
+            }
+        }
+
+        @media screen and (min-width: 769px) {
+            #pc-keyboard {
+                display: block;
+            }
+        }
+
+        /* Add styles for alif popup menu */
+        .alif-popup {
+            display: none;
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 10px;
+            padding: 10px;
+            z-index: 1100;
+        }
+
+        .alif-popup .key {
+            margin: 5px;
+            min-width: 40px;
+        }
+
+        #pc-keyboard .key {
+            margin: 1px;
+            padding: 8px;
+            background: white;
+            border: 1px solid #333;
+            border-radius: 3px;
+            color: black;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 30px;
+            transition: transform 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #pc-keyboard .latin-char {
+            font-size: 10px;
+            color: #333;
+            margin-bottom: 1px;
+        }
+
+        #pc-keyboard .arabic-char {
+            font-size: 14px;
+        }
+
+        #pc-keyboard .key:active {
+            transform: scale(0.95);
+            background: #eee;
+        }
+
+        #pc-keyboard .backspace-key {
+            background: white;
+            padding: 8px 15px;
+        }
+
+        #pc-keyboard .shift-key {
+            min-width: 50px;
+            background: white;
+        }
+
+        #pc-keyboard .keyboard-row {
+            margin: 1px 0;
+        }
     </style>
 </head>
 <body>
@@ -570,55 +782,111 @@
     <div id="game-container">
         <div id="game-info">
             <div id="lives">❤️ <span id="lives-value">4</span></div>
-            <div id="timer">الوقت: <span id="timer-value">0:00</span></div>
-            <div id="score">النقاط: <span id="score-value">0</span></div>
+            <div id="timer">⏰ <span id="timer-value">0:00</span></div>
+            <div id="score">🏆 <span id="score-value">0</span></div>
         </div>
         <div id="input-display"></div>
         <input type="text" id="input-box" placeholder="اكتب هنا..." autocomplete="off">
-        <div id="virtual-keyboard">
-            <div class="keyboard-row">
-                <div class="key" data-char="ض"><span class="latin">Q</span><span class="arabic">ض</span></div>
-                <div class="key" data-char="ص"><span class="latin">W</span><span class="arabic">ص</span></div>
-                <div class="key" data-char="ث"><span class="latin">E</span><span class="arabic">ث</span></div>
-                <div class="key" data-char="ق"><span class="latin">R</span><span class="arabic">ق</span></div>
-                <div class="key" data-char="ف"><span class="latin">T</span><span class="arabic">ف</span></div>
-                <div class="key" data-char="غ"><span class="latin">Y</span><span class="arabic">غ</span></div>
-                <div class="key" data-char="ع"><span class="latin">U</span><span class="arabic">ع</span></div>
-                <div class="key" data-char="ه"><span class="latin">I</span><span class="arabic">ه</span></div>
-                <div class="key" data-char="خ"><span class="latin">O</span><span class="arabic">خ</span></div>
-                <div class="key" data-char="ح"><span class="latin">P</span><span class="arabic">ح</span></div>
-                <div class="key" data-char="ج"><span class="latin">[</span><span class="arabic">ج</span></div>
-            </div>
-            <div class="keyboard-row">
-                <div class="key" data-char="ش"><span class="latin">A</span><span class="arabic">ش</span></div>
-                <div class="key" data-char="س"><span class="latin">S</span><span class="arabic">س</span></div>
-                <div class="key" data-char="ي"><span class="latin">D</span><span class="arabic">ي</span></div>
-                <div class="key" data-char="ب"><span class="latin">F</span><span class="arabic">ب</span></div>
-                <div class="key" data-char="ل"><span class="latin">G</span><span class="arabic">ل</span></div>
-                <div class="key" data-char="ا"><span class="latin">H</span><span class="arabic">ا</span></div>
-                <div class="key" data-char="ت"><span class="latin">J</span><span class="arabic">ت</span></div>
-                <div class="key" data-char="ن"><span class="latin">K</span><span class="arabic">ن</span></div>
-                <div class="key" data-char="م"><span class="latin">L</span><span class="arabic">م</span></div>
-                <div class="key" data-char="ك"><span class="latin">;</span><span class="arabic">ك</span></div>
-            </div>
-            <div class="keyboard-row">
-                <div class="key shift"><span class="latin">Shift</span></div>
-                <div class="key" data-char="ئ" data-shift="~"><span class="latin">Z</span><span class="arabic">ئ</span></div>
-                <div class="key" data-char="ء" data-shift="ْ"><span class="latin">X</span><span class="arabic">ء</span></div>
-                <div class="key" data-char="ؤ" data-shift="ٌ"><span class="latin">C</span><span class="arabic">ؤ</span></div>
-                <div class="key" data-char="ر" data-shift="ٍ"><span class="latin">V</span><span class="arabic">ر</span></div>
-                <div class="key" data-char="لا" data-shift="إ"><span class="latin">B</span><span class="arabic">لا</span></div>
-                <div class="key" data-char="ى" data-shift="'"><span class="latin">N</span><span class="arabic">ى</span></div>
-                <div class="key" data-char="ة" data-shift='"'><span class="latin">M</span><span class="arabic">ة</span></div>
-                <div class="key" data-char="و" data-shift=","><span class="latin">,</span><span class="arabic">و</span></div>
-                <div class="key" data-char="ز" data-shift="."><span class="latin">.</span><span class="arabic">ز</span></div>
-                <div class="key" data-char="ظ" data-shift="؟"><span class="latin">/</span><span class="arabic">ظ</span></div>
-                <div class="key backspace">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-3 12.59L17.59 17 14 13.41 10.41 17 9 15.59 12.59 12 9 8.41 10.41 7 14 10.59 17.59 7 19 8.41 15.41 12 19 15.59z"></path>
-                    </svg>
+        <div id="keyboard-container">
+            <!-- PC Keyboard Layout -->
+            <div id="pc-keyboard" class="keyboard">
+                <div class="keyboard-row">
+                    <button class="backspace-key">⌫</button>
+                    <button class="key" data-normal="٠"><span class="latin-char">0</span><span class="arabic-char">٠</span></button>
+                    <button class="key" data-normal="٩"><span class="latin-char">9</span><span class="arabic-char">٩</span></button>
+                    <button class="key" data-normal="٨"><span class="latin-char">8</span><span class="arabic-char">٨</span></button>
+                    <button class="key" data-normal="٧"><span class="latin-char">7</span><span class="arabic-char">٧</span></button>
+                    <button class="key" data-normal="٦"><span class="latin-char">6</span><span class="arabic-char">٦</span></button>
+                    <button class="key" data-normal="٥"><span class="latin-char">5</span><span class="arabic-char">٥</span></button>
+                    <button class="key" data-normal="٤"><span class="latin-char">4</span><span class="arabic-char">٤</span></button>
+                    <button class="key" data-normal="٣"><span class="latin-char">3</span><span class="arabic-char">٣</span></button>
+                    <button class="key" data-normal="٢"><span class="latin-char">2</span><span class="arabic-char">٢</span></button>
+                    <button class="key" data-normal="١"><span class="latin-char">1</span><span class="arabic-char">١</span></button>
+                    <button class="key" data-normal="ذ"><span class="latin-char">`</span><span class="arabic-char">ذ</span></button>
                 </div>
-                <div class="key shift"><span class="latin">Shift</span></div>
+                <div class="keyboard-row">
+                    <button class="key" data-normal="د"><span class="latin-char">]</span><span class="arabic-char">د</span></button>
+                    <button class="key" data-normal="ج"><span class="latin-char">[</span><span class="arabic-char">ج</span></button>
+                    <button class="key" data-normal="ح"><span class="latin-char">P</span><span class="arabic-char">ح</span></button>
+                    <button class="key" data-normal="خ"><span class="latin-char">O</span><span class="arabic-char">خ</span></button>
+                    <button class="key" data-normal="ه"><span class="latin-char">I</span><span class="arabic-char">ه</span></button>
+                    <button class="key" data-normal="ع"><span class="latin-char">U</span><span class="arabic-char">ع</span></button>
+                    <button class="key" data-normal="غ"><span class="latin-char">Y</span><span class="arabic-char">غ</span></button>
+                    <button class="key" data-normal="ف"><span class="latin-char">T</span><span class="arabic-char">ف</span></button>
+                    <button class="key" data-normal="ق"><span class="latin-char">R</span><span class="arabic-char">ق</span></button>
+                    <button class="key" data-normal="ث"><span class="latin-char">E</span><span class="arabic-char">ث</span></button>
+                    <button class="key" data-normal="ص"><span class="latin-char">W</span><span class="arabic-char">ص</span></button>
+                    <button class="key" data-normal="ض"><span class="latin-char">Q</span><span class="arabic-char">ض</span></button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key" data-normal="ط"><span class="latin-char">'</span><span class="arabic-char">ط</span></button>
+                    <button class="key" data-normal="ك"><span class="latin-char">;</span><span class="arabic-char">ك</span></button>
+                    <button class="key" data-normal="م"><span class="latin-char">L</span><span class="arabic-char">م</span></button>
+                    <button class="key" data-normal="ن"><span class="latin-char">K</span><span class="arabic-char">ن</span></button>
+                    <button class="key" data-normal="ت"><span class="latin-char">J</span><span class="arabic-char">ت</span></button>
+                    <button class="key" data-normal="ا"><span class="latin-char">H</span><span class="arabic-char">ا</span></button>
+                    <button class="key" data-normal="ل"><span class="latin-char">G</span><span class="arabic-char">ل</span></button>
+                    <button class="key" data-normal="ب"><span class="latin-char">F</span><span class="arabic-char">ب</span></button>
+                    <button class="key" data-normal="ي"><span class="latin-char">D</span><span class="arabic-char">ي</span></button>
+                    <button class="key" data-normal="س"><span class="latin-char">S</span><span class="arabic-char">س</span></button>
+                    <button class="key" data-normal="ش"><span class="latin-char">A</span><span class="arabic-char">ش</span></button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key shift-key">Shift</button>
+                    <button class="key" data-normal="ظ"><span class="latin-char">/</span><span class="arabic-char">ظ</span></button>
+                    <button class="key" data-normal="ز"><span class="latin-char">.</span><span class="arabic-char">ز</span></button>
+                    <button class="key" data-normal="و"><span class="latin-char">,</span><span class="arabic-char">و</span></button>
+                    <button class="key" data-normal="ة"><span class="latin-char">M</span><span class="arabic-char">ة</span></button>
+                    <button class="key" data-normal="ى"><span class="latin-char">N</span><span class="arabic-char">ى</span></button>
+                    <button class="key" data-normal="لا"><span class="latin-char">B</span><span class="arabic-char">لا</span></button>
+                    <button class="key" data-normal="ر"><span class="latin-char">V</span><span class="arabic-char">ر</span></button>
+                    <button class="key" data-normal="ؤ"><span class="latin-char">C</span><span class="arabic-char">ؤ</span></button>
+                    <button class="key" data-normal="ء"><span class="latin-char">X</span><span class="arabic-char">ء</span></button>
+                    <button class="key" data-normal="ئ"><span class="latin-char">Z</span><span class="arabic-char">ئ</span></button>
+                    <button class="key shift-key">Shift</button>
+                </div>
+            </div>
+
+            <!-- Mobile Keyboard Layout -->
+            <div id="mobile-keyboard" class="keyboard">
+                <div class="keyboard-row">
+                    <button class="key">ض</button>
+                    <button class="key">ص</button>
+                    <button class="key">ث</button>
+                    <button class="key">ق</button>
+                    <button class="key">ف</button>
+                    <button class="key">غ</button>
+                    <button class="key">ع</button>
+                    <button class="key">ه</button>
+                    <button class="key">خ</button>
+                    <button class="key">ح</button>
+                    <button class="key">ج</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key">ش</button>
+                    <button class="key">س</button>
+                    <button class="key">ي</button>
+                    <button class="key">ب</button>
+                    <button class="key">ل</button>
+                    <button class="key alif-key">ا</button>
+                    <button class="key">ت</button>
+                    <button class="key">ن</button>
+                    <button class="key">م</button>
+                    <button class="key">ك</button>
+                    <button class="key">ة</button>
+                </div>
+                <div class="keyboard-row">
+                    <button class="key">ء</button>
+                    <button class="key">ظ</button>
+                    <button class="key">ط</button>
+                    <button class="key">ذ</button>
+                    <button class="key">د</button>
+                    <button class="key">ز</button>
+                    <button class="key">ر</button>
+                    <button class="key">و</button>
+                    <button class="key">ى</button>
+                    <button class="backspace-key">⌫</button>
+                </div>
             </div>
         </div>
     </div>
@@ -665,7 +933,7 @@
         // Fungsi untuk keyboard virtual
         document.addEventListener('DOMContentLoaded', function() {
             const input = document.getElementById('input-box');
-            const keyboard = document.getElementById('virtual-keyboard');
+            const keyboard = document.getElementById('keyboard-container');
             const inputDisplay = document.getElementById('input-display');
             let isShiftPressed = false;
             
@@ -749,7 +1017,7 @@
 
                 // Event untuk menutup keyboard saat klik di luar
                 document.addEventListener('click', function(e) {
-                    if (!e.target.closest('#virtual-keyboard') && 
+                    if (!e.target.closest('#keyboard-container') && 
                         !e.target.closest('#input-box')) {
                         if (window.innerWidth <= 768) {
                             hideVirtualKeyboard();
