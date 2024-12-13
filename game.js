@@ -275,30 +275,69 @@ function getArabicChar(key) {
     return keyMap[lowerKey] || null;
 }
 
-function handleVirtualKeyPress(char) {
+function handleVirtualKeyPress(char, isBackspace = false) {
     if (isGameOver) return;
     
-    inputBox.value += char;
-    // Memicu event input untuk mengecek kata
-    const event = new Event('input');
-    inputBox.dispatchEvent(event);
+    const input = document.getElementById('input-box');
+    if (!input) return;
+    
+    if (isBackspace) {
+        // Only remove one character
+        if (input.value.length > 0) {
+            input.value = input.value.slice(0, -1);
+        }
+    } else {
+        input.value += char;
+    }
+    
+    // Trigger input event
+    input.dispatchEvent(new Event('input'));
 }
 
-function showVirtualKeyboard() {
-    const keyboardContainer = document.getElementById('keyboard-container');
-    keyboardContainer.style.display = 'block';
+function setupVirtualKeyboard() {
+    const keyboard = document.getElementById('keyboard-container');
+    const mobileKeyboard = document.getElementById('mobile-keyboard');
+    const pcKeyboard = document.getElementById('pc-keyboard');
     
-    // Remove existing event listeners first
-    const keys = document.querySelectorAll('.key');
-    keys.forEach(key => {
+    // Show appropriate keyboard based on device
+    if (window.innerWidth < 768) {
+        mobileKeyboard.style.display = 'block';
+        pcKeyboard.style.display = 'none';
+    } else {
+        mobileKeyboard.style.display = 'none';
+        pcKeyboard.style.display = 'block';
+    }
+
+    // Setup PC keyboard
+    const pcKeys = pcKeyboard.querySelectorAll('.key');
+    pcKeys.forEach(key => {
         const newKey = key.cloneNode(true);
         key.parentNode.replaceChild(newKey, key);
+        
+        newKey.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const char = newKey.getAttribute('data-normal');
+            if (char) {
+                handleVirtualKeyPress(char, false);
+            }
+        });
     });
-    
-    let isShiftPressed = false;
 
-    // Handle shift key
-    const shiftKeys = document.querySelectorAll('.shift-key');
+    // Setup PC backspace
+    const pcBackspace = pcKeyboard.querySelector('.backspace-key');
+    if (pcBackspace) {
+        pcBackspace.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleVirtualKeyPress('', true);
+        });
+    }
+
+    // Setup PC shift key
+    const shiftKeys = pcKeyboard.querySelectorAll('.shift-key');
+    let isShiftPressed = false;
+    
     shiftKeys.forEach(shiftKey => {
         shiftKey.addEventListener('mousedown', () => {
             isShiftPressed = true;
@@ -317,68 +356,119 @@ function showVirtualKeyboard() {
     });
 
     function updateKeyDisplay() {
-        const keys = document.querySelectorAll('#pc-keyboard .key:not(.shift-key):not(.backspace-key)');
-        keys.forEach(key => {
-            const arabicChar = key.querySelector('.arabic-char');
-            if (arabicChar) {
-                arabicChar.textContent = isShiftPressed ? key.dataset.shift : key.dataset.normal;
+        pcKeys.forEach(key => {
+            if (!key.classList.contains('shift-key') && !key.classList.contains('backspace-key')) {
+                const arabicChar = key.querySelector('.arabic-char');
+                if (arabicChar) {
+                    arabicChar.textContent = isShiftPressed ? 
+                        key.getAttribute('data-shift') || key.getAttribute('data-normal') : 
+                        key.getAttribute('data-normal');
+                }
             }
         });
     }
-    
-    // Add fresh event listeners
-    document.querySelectorAll('.key').forEach(key => {
-        if (!key.classList.contains('shift-key')) {
+
+    // Mobile keyboard setup
+    const oldKeys = mobileKeyboard.querySelectorAll('.key, .backspace-key');
+    oldKeys.forEach(key => {
+        const newKey = key.cloneNode(true);
+        key.parentNode.replaceChild(newKey, key);
+    });
+
+    // Setup all mobile keyboard keys
+    const mobileKeys = mobileKeyboard.querySelectorAll('.key:not(.variant-key)');
+    mobileKeys.forEach(key => {
+        if (!key.classList.contains('alif-key')) {
             key.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (key.classList.contains('backspace-key')) {
-                    const input = document.getElementById('input-box');
-                    input.value = input.value.slice(0, -1);
-                    input.dispatchEvent(new Event('input'));
-                } else {
-                    const char = isShiftPressed ? key.dataset.shift : key.dataset.normal;
-                    handleVirtualKeyPress(char);
-                    // Reset shift after pressing a key
-                    if (isShiftPressed) {
-                        isShiftPressed = false;
-                        updateKeyDisplay();
-                    }
+                e.stopPropagation();
+                const char = key.getAttribute('data-normal');
+                if (char) {
+                    handleVirtualKeyPress(char, false);
                 }
             });
         }
     });
 
-    // Handle backspace long press
-    const backspaceKey = document.querySelector('.backspace-key');
-    if (backspaceKey) {
-        let backspaceInterval;
-        
-        backspaceKey.addEventListener('touchstart', (e) => {
+    // Setup mobile backspace
+    const mobileBackspace = mobileKeyboard.querySelector('.backspace-key');
+    if (mobileBackspace) {
+        mobileBackspace.addEventListener('click', (e) => {
             e.preventDefault();
-            const input = document.getElementById('input-box');
-            input.value = input.value.slice(0, -1);
-            input.dispatchEvent(new Event('input'));
-            
-            backspaceInterval = setInterval(() => {
-                input.value = input.value.slice(0, -1);
-                input.dispatchEvent(new Event('input'));
-            }, 150);
+            e.stopPropagation();
+            handleVirtualKeyPress('', true);
+        });
+    }
+
+    // Setup Alif long press
+    const alifKey = mobileKeyboard.querySelector('.alif-key');
+    const alifPopup = mobileKeyboard.querySelector('.alif-popup');
+    
+    if (alifKey && alifPopup) {
+        let longPressTimer;
+        let isLongPress = false;
+
+        const showAlifVariants = (rect) => {
+            isLongPress = true;
+            alifPopup.style.display = 'block';
+            // Position popup above the alif key
+            alifPopup.style.bottom = `${window.innerHeight - rect.top + 5}px`;
+            alifPopup.style.left = `${rect.left}px`;
+        };
+
+        const handleAlifStart = (e) => {
+            e.preventDefault();
+            isLongPress = false;
+            const rect = alifKey.getBoundingClientRect();
+            longPressTimer = setTimeout(() => showAlifVariants(rect), 500);
+        };
+
+        const handleAlifEnd = (e) => {
+            clearTimeout(longPressTimer);
+            if (!isLongPress) {
+                handleVirtualKeyPress('ا');
+            }
+        };
+
+        // Touch events for alif key
+        alifKey.addEventListener('touchstart', handleAlifStart);
+        alifKey.addEventListener('touchend', handleAlifEnd);
+        
+        // Mouse events for alif key
+        alifKey.addEventListener('mousedown', handleAlifStart);
+        alifKey.addEventListener('mouseup', handleAlifEnd);
+        alifKey.addEventListener('mouseleave', handleAlifEnd);
+
+        // Setup alif variant buttons
+        const alifVariants = alifPopup.querySelectorAll('.variant-key');
+        alifVariants.forEach(variant => {
+            variant.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const char = variant.getAttribute('data-normal');
+                if (char) {
+                    handleVirtualKeyPress(char);
+                }
+                alifPopup.style.display = 'none';
+                isLongPress = false;
+            }, { once: true }); // Add once: true to prevent multiple handlers
         });
 
-        backspaceKey.addEventListener('touchend', () => {
-            clearInterval(backspaceInterval);
+        // Hide popup when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!alifPopup.contains(e.target) && e.target !== alifKey) {
+                alifPopup.style.display = 'none';
+                isLongPress = false;
+            }
         });
     }
 }
 
-function hideVirtualKeyboard() {
-    const keyboardContainer = document.getElementById('keyboard-container');
-    const alifPopup = document.querySelector('.alif-popup');
-    if (alifPopup) {
-        alifPopup.style.display = 'none';
-    }
-    keyboardContainer.style.display = 'none';
-}
+// Initialize virtual keyboard when page loads
+document.addEventListener('DOMContentLoaded', setupVirtualKeyboard);
+
+// Update keyboard on window resize
+window.addEventListener('resize', setupVirtualKeyboard);
 
 // Event listener untuk input box
 inputBox.addEventListener('input', () => {
@@ -401,8 +491,21 @@ inputBox.addEventListener('input', () => {
 inputBox.addEventListener('focus', (e) => {
     if (window.innerWidth <= 768) {
         e.preventDefault();
-        inputBox.blur();
-        showVirtualKeyboard();
+        const keyboardContainer = document.getElementById('keyboard-container');
+        const mobileKeyboard = document.getElementById('mobile-keyboard');
+        const pcKeyboard = document.getElementById('pc-keyboard');
+        
+        keyboardContainer.style.display = 'block';
+        mobileKeyboard.style.display = 'block';
+        pcKeyboard.style.display = 'none';
+        setupVirtualKeyboard();
+    }
+});
+
+inputBox.addEventListener('blur', () => {
+    if (window.innerWidth > 768) {
+        const keyboardContainer = document.getElementById('keyboard-container');
+        keyboardContainer.style.display = 'none';
     }
 });
 
