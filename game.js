@@ -284,6 +284,102 @@ function handleVirtualKeyPress(char) {
     inputBox.dispatchEvent(event);
 }
 
+function showVirtualKeyboard() {
+    const keyboardContainer = document.getElementById('keyboard-container');
+    keyboardContainer.style.display = 'block';
+    
+    // Remove existing event listeners first
+    const keys = document.querySelectorAll('.key');
+    keys.forEach(key => {
+        const newKey = key.cloneNode(true);
+        key.parentNode.replaceChild(newKey, key);
+    });
+    
+    let isShiftPressed = false;
+
+    // Handle shift key
+    const shiftKeys = document.querySelectorAll('.shift-key');
+    shiftKeys.forEach(shiftKey => {
+        shiftKey.addEventListener('mousedown', () => {
+            isShiftPressed = true;
+            updateKeyDisplay();
+        });
+
+        shiftKey.addEventListener('mouseup', () => {
+            isShiftPressed = false;
+            updateKeyDisplay();
+        });
+
+        shiftKey.addEventListener('mouseleave', () => {
+            isShiftPressed = false;
+            updateKeyDisplay();
+        });
+    });
+
+    function updateKeyDisplay() {
+        const keys = document.querySelectorAll('#pc-keyboard .key:not(.shift-key):not(.backspace-key)');
+        keys.forEach(key => {
+            const arabicChar = key.querySelector('.arabic-char');
+            if (arabicChar) {
+                arabicChar.textContent = isShiftPressed ? key.dataset.shift : key.dataset.normal;
+            }
+        });
+    }
+    
+    // Add fresh event listeners
+    document.querySelectorAll('.key').forEach(key => {
+        if (!key.classList.contains('shift-key')) {
+            key.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (key.classList.contains('backspace-key')) {
+                    const input = document.getElementById('input-box');
+                    input.value = input.value.slice(0, -1);
+                    input.dispatchEvent(new Event('input'));
+                } else {
+                    const char = isShiftPressed ? key.dataset.shift : key.dataset.normal;
+                    handleVirtualKeyPress(char);
+                    // Reset shift after pressing a key
+                    if (isShiftPressed) {
+                        isShiftPressed = false;
+                        updateKeyDisplay();
+                    }
+                }
+            });
+        }
+    });
+
+    // Handle backspace long press
+    const backspaceKey = document.querySelector('.backspace-key');
+    if (backspaceKey) {
+        let backspaceInterval;
+        
+        backspaceKey.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('input-box');
+            input.value = input.value.slice(0, -1);
+            input.dispatchEvent(new Event('input'));
+            
+            backspaceInterval = setInterval(() => {
+                input.value = input.value.slice(0, -1);
+                input.dispatchEvent(new Event('input'));
+            }, 150);
+        });
+
+        backspaceKey.addEventListener('touchend', () => {
+            clearInterval(backspaceInterval);
+        });
+    }
+}
+
+function hideVirtualKeyboard() {
+    const keyboardContainer = document.getElementById('keyboard-container');
+    const alifPopup = document.querySelector('.alif-popup');
+    if (alifPopup) {
+        alifPopup.style.display = 'none';
+    }
+    keyboardContainer.style.display = 'none';
+}
+
 // Event listener untuk input box
 inputBox.addEventListener('input', () => {
     const typedWord = inputBox.value;
